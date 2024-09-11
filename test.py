@@ -245,16 +245,18 @@ def parse_battery_cycle_count(response):
     start_time = time.time()
     try:
         index_of_87 = response.index(0x87)
-        print(f"Found 0x87 at position: {index_of_87}")
+        if args.ptime == "show": 
+            print(f"Found 0x87 at position: {index_of_87}")
         
         # Načteme 2 bajty pro počet cyklů baterie
         cycle_count_bytes = response[index_of_87 + 1:index_of_87 + 3]
         
         # Převod 2 bajtů na integer (počet cyklů baterie)
         cycle_count = struct.unpack('>H', cycle_count_bytes)[0]
+       
+        print(f"Number of battery cycles: {cycle_count}")
         if args.ptime == "show":
-         print(f"Number of battery cycles: {cycle_count}")
-        print(f"Battery cycle count parsing took: {time.time() - start_time:.4f} seconds")
+         print(f"Battery cycle count parsing took: {time.time() - start_time:.4f} seconds")
         return cycle_count
     except ValueError:
         print("\033[91m0x87 not found in the response.\033[0m")
