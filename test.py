@@ -323,7 +323,7 @@ def parse_battery_warning(response):
         return None
 
 
-def send_data_to_mqtt(voltage, current, delta_voltage, cell_voltages, soc):
+def send_data_to_mqtt(voltage, current, delta_voltage, cell_voltages, soc, power_tube_temp, battery_box_temp, battery_temp):
     mqtt_broker = "127.0.0.1"
     mqtt_port = 1883
     mqtt_topic = "jkbms-test"
@@ -334,12 +334,18 @@ def send_data_to_mqtt(voltage, current, delta_voltage, cell_voltages, soc):
     # Rozbalíme jednotlivé napětí článků pro odeslání
     cell_voltage_data = ",".join([f"voltage_cell{cell[0]}={cell[1]}" for cell in cell_voltages])
 
-    # Přidáme SOC do zprávy
-    data = f"battery_measurements voltage={voltage},current={current},delta_voltage={delta_voltage},soc={soc},{cell_voltage_data}"
+    # Přidáme SOC, teploty a napětí článků do zprávy
+    data = (f"battery_measurements voltage={voltage},current={current},delta_voltage={delta_voltage},soc={soc},"
+            f"power_tube_temp={power_tube_temp},battery_box_temp={battery_box_temp},battery_temp={battery_temp},"
+            f"{cell_voltage_data}")
+    
     client.publish(mqtt_topic, data)
-    print(f"Data o napětí {voltage} V, proudu {current} A, delta napětí {delta_voltage} V, SOC {soc}% a napětí článků byla odeslána na MQTT téma '{mqtt_topic}'.")
+    print(f"Data o napětí {voltage} V, proudu {current} A, delta napětí {delta_voltage} V, SOC {soc}%, "
+          f"teplotě MOSFETu {power_tube_temp} °C, teplotě bateriového boxu {battery_box_temp} °C, "
+          f"teplotě baterie {battery_temp} °C a napětí článků byla odeslána na MQTT téma '{mqtt_topic}'.")
 
     client.disconnect()
+
 
 
 
