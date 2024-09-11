@@ -391,11 +391,12 @@ def gather_and_send_data():
             current_calibration_status=parse_current_calibration_status(full_response)
             active_balance_switch = parse_active_balance_switch(full_response)
             battery_warn = parse_battery_warning(full_response)
-            temp_data=parse_temperature_sensors(full_response)
+            power_tube_temp, battery_box_temp, battery_temp = parse_temperature_sensors(full_response)
             temp_sensor_count=parse_temperature_sensor_count(full_response)
 
             if args.output == "mqtt":
-                send_data_to_mqtt(total_voltage, current_value, delta_voltage, cell_voltages, soc_value)
+                send_data_to_mqtt(total_voltage, current_value, delta_voltage, cell_voltages, soc_value,
+                                  power_tube_temp, battery_box_temp, battery_temp)
 
         interpret_time = time.time() - interpret_start_time
         print(f"Data interpretation took: {interpret_time:.4f} seconds")
