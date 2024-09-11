@@ -220,6 +220,25 @@ def parse_protocol_version(response):
     except ValueError:
         print("\033[91m0xC0 not found in the response.\033[0m")
         return None
+    
+def parse_battery_capacity_setting(response):
+    start_time = time.time()
+    try:
+        index_of_aa = response.index(0xaa)
+        print(f"Found 0xAA at position: {index_of_aa}")
+        
+        # Načteme 4 bajty pro kapacitu
+        capacity_bytes = response[index_of_aa + 1:index_of_aa + 5]
+        
+        # Převod 4 bajtů na integer (kapacita baterie v AH)
+        battery_capacity = struct.unpack('>I', capacity_bytes)[0]
+        
+        print(f"Battery capacity setting: {battery_capacity} AH")
+        print(f"Battery capacity parsing took: {time.time() - start_time:.4f} seconds")
+        return battery_capacity
+    except ValueError:
+        print("\033[91m0xAA not found in the response.\033[0m")
+        return None
 
 def parse_current_calibration(response):
     start_time = time.time()
@@ -393,6 +412,7 @@ def gather_and_send_data():
             battery_warn = parse_battery_warning(full_response)
             power_tube_temp, battery_box_temp, battery_temp = parse_temperature_sensors(full_response)
             temp_sensor_count=parse_temperature_sensor_count(full_response)
+            battery_capacity_setting = parse_battery_capacity_setting(full_response)
 
             if args.output == "mqtt":
                 send_data_to_mqtt(total_voltage, current_value, delta_voltage, cell_voltages, soc_value,
