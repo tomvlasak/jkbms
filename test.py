@@ -370,6 +370,7 @@ def gather_and_send_data():
             actual_battery_capacity = parse_actual_battery_capacity(full_response)
             protocol_version = parse_protocol_version(full_response)
             current_calibration = parse_current_calibration(full_response)
+            current_calibration_status=parse_current_calibration_status(full_response)
             active_balance_switch = parse_active_balance_switch(full_response)
             battery_warn = parse_battery_warning(full_response)
             temp_data=parse_temperature_sensors(full_response)
