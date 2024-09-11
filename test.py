@@ -217,7 +217,7 @@ def parse_current_calibration(response):
         print(f"Current calibration parsing took: {time.time() - start_time:.4f} seconds")
         return calibration_value
     except ValueError:
-        print("0xAD not found in the response.")
+        print("\033[91m0xAD not found in the response.\033[0m")
         return None
 
 def parse_active_balance_switch(response):
@@ -230,7 +230,7 @@ def parse_active_balance_switch(response):
         print(f"Active balance switch parsing took: {time.time() - start_time:.4f} seconds")
         return active_balance_switch
     except ValueError:
-        print("0x9D not found in the response.")
+        print("\033[91m0x9D not found in the response.\033[0m")
         return None
 
 
