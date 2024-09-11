@@ -262,6 +262,45 @@ def parse_battery_cycle_count(response):
         print("\033[91m0x87 not found in the response.\033[0m")
         return None
 
+def parse_battery_status(response):
+    start_time = time.time()
+    try:
+        index_of_8c = response.index(0x8c)
+        if args.ptime == "show":
+            print(f"Found 0x8C at position: {index_of_8c}")
+        
+        # Načtení 2 bajtů stavu baterie
+        status_high = response[index_of_8c + 1]
+        status_low = response[index_of_8c + 2]
+        status_raw = (status_high << 8) | status_low
+        
+        print(f"Battery status raw data: {status_raw} (hex: {hex(status_raw)})")
+
+        # Dekódování jednotlivých bitů
+        charging_mos = (status_raw >> 0) & 1
+        discharging_mos = (status_raw >> 1) & 1
+        balance_switch = (status_raw >> 2) & 1
+        battery_dropped = (status_raw >> 3) & 1
+
+        # Výpis výsledků
+        print(f"Charging MOS tube state: {'On' if charging_mos else 'Off'}")
+        print(f"Discharging MOS tube state: {'On' if discharging_mos else 'Off'}")
+        print(f"Balance switch state: {'On' if balance_switch else 'Off'}")
+        print(f"Battery dropped: {'Normal' if battery_dropped else 'Offline'}")
+        
+        if args.ptime == "show":
+            print(f"Battery status parsing took: {time.time() - start_time:.4f} seconds")
+        
+        return {
+            'charging_mos': charging_mos,
+            'discharging_mos': discharging_mos,
+            'balance_switch': balance_switch,
+            'battery_dropped': battery_dropped
+        }
+    except ValueError:
+        print("\033[91m0x8C not found in the response.\033[0m")
+        return None
+
 def parse_total_battery_cycle_capacity(response):
     start_time = time.time()
     try:
@@ -458,6 +497,7 @@ def gather_and_send_data():
             battery_capacity = parse_battery_capacity_setting(full_response)
             battery_cycle_capacity = parse_total_battery_cycle_capacity(full_response)
             battery_cycle_count = parse_battery_cycle_count(full_response)
+            battery_status = parse_battery_status(full_response)
 
             if args.output == "mqtt":
                 send_data_to_mqtt(total_voltage, current_value, delta_voltage, cell_voltages, soc_value,
