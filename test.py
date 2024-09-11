@@ -66,7 +66,7 @@ def parse_total_voltage(response):
         total_voltage = total_voltage_raw * 0.01
         
         print(f"Total voltage (V): {total_voltage}")
-        if args.ptime:
+        if args.ptime == "show":
          print(f"Total voltage parsing took: {time.time() - start_time:.4f} seconds")
         return total_voltage
     except ValueError:
@@ -80,7 +80,7 @@ def parse_soc(response):
         print(f"Found 0x85 at position: {index_of_85}")
         soc_value = response[index_of_85 + 1]
         print(f"SOC (State of Charge): {soc_value}%")
-        if args.ptime:
+        if args.ptime == "show":
          print(f"SOC parsing took: {time.time() - start_time:.4f} seconds")
         return soc_value
     except ValueError:
@@ -117,7 +117,7 @@ def parse_current(response):
         print("\033[91m0x84 not found in the response.\033[0m")
         return None
     finally:
-        if args.ptime:
+        if args.ptime == "show":
          print(f"Current parsing took: {time.time() - start_time:.4f} seconds")
 
 def parse_total_battery_strings(response):
@@ -129,7 +129,7 @@ def parse_total_battery_strings(response):
         strings_low = response[index_of_8a + 2]
         total_strings = (strings_high << 8) | strings_low
         print(f"Total number of battery strings: {total_strings}")
-        if args.ptime:
+        if args.ptime == "show":
          print(f"Battery strings parsing took: {time.time() - start_time:.4f} seconds")
         return total_strings
     except ValueError:
@@ -151,7 +151,7 @@ def parse_individual_cell_voltage(response):
             voltage_v = voltage_mv / 1000.0
             cell_voltages.append((cell_number, voltage_v))
             print(f"Cell {cell_number} voltage: {voltage_v} V")
-        if args.ptime:
+        if args.ptime == "show":
          print(f"Cell voltage parsing took: {time.time() - start_time:.4f} seconds")
         return cell_voltages
     except ValueError:
@@ -176,7 +176,7 @@ def parse_software_version(response):
         print(f"Found 0xB7 at position: {index_of_b7}")
         version_data = response[index_of_b7 + 1:index_of_b7 + 16].decode("utf-8")
         print(f"Software version number: {version_data}")
-        if args.ptime:
+        if args.ptime == "show":
          print(f"Software version parsing took: {time.time() - start_time:.4f} seconds")
         return version_data
     except ValueError:
@@ -192,7 +192,7 @@ def parse_actual_battery_capacity(response):
         capacity_low = response[index_of_b9 + 2]
         actual_capacity = (capacity_high << 8) | capacity_low
         print(f"Actual battery capacity: {actual_capacity} AH")
-        if args.ptime:
+        if args.ptime == "show":
          print(f"Actual battery capacity parsing took: {time.time() - start_time:.4f} seconds")
         return actual_capacity
     except ValueError:
@@ -206,7 +206,7 @@ def parse_protocol_version(response):
         print(f"Found 0xC0 at position: {index_of_c0}")
         protocol_version = response[index_of_c0 + 1]
         print(f"Protocol version number: {protocol_version}")
-        if args.ptime:
+        if args.ptime == "show":
          print(f"Protocol version parsing took: {time.time() - start_time:.4f} seconds")
         return protocol_version
     except ValueError:
@@ -222,7 +222,7 @@ def parse_current_calibration(response):
         calibration_low = response[index_of_ad + 2]
         calibration_value = (calibration_high << 8) | calibration_low
         print(f"Current calibration: {calibration_value} mA")
-        if args.ptime:
+        if args.ptime == "show":
          print(f"Current calibration parsing took: {time.time() - start_time:.4f} seconds")
         return calibration_value
     except ValueError:
@@ -236,7 +236,7 @@ def parse_active_balance_switch(response):
         print(f"Found 0x9D at position: {index_of_9d}")
         active_balance_switch = response[index_of_9d + 1]
         print(f"Active balance switch: {'ON' if active_balance_switch == 1 else 'OFF'}")
-        if args.ptime:
+        if args.ptime == "show":
          print(f"Active balance switch parsing took: {time.time() - start_time:.4f} seconds")
         return active_balance_switch
     except ValueError:
@@ -361,7 +361,7 @@ def gather_and_send_data():
 parser = argparse.ArgumentParser(description="Monitor BMS data and optionally send it via MQTT.")
 parser.add_argument("-o", "--output", choices=["mqtt", "none"], default="none", help="Send output to MQTT")
 parser.add_argument("-d", "--daemon", action="store_true", help="Run script as daemon")
-parser.add_argument("-t", "--ptime", action="store_true", help="Print time")
+parser.add_argument("-t", "--ptime", choices=["show", "none"], default="none", help="Print time")
 args = parser.parse_args()
 
 # Zaregistrujeme signal handler pro Ctrl+C
