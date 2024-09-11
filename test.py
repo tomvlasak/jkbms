@@ -225,7 +225,8 @@ def parse_battery_capacity_setting(response):
     start_time = time.time()
     try:
         index_of_aa = response.index(0xaa)
-        print(f"Found 0xAA at position: {index_of_aa}")
+        if args.ptime == "show":
+            print(f"Found 0xAA at position: {index_of_aa}")
         
         # Načteme 4 bajty pro kapacitu
         capacity_bytes = response[index_of_aa + 1:index_of_aa + 5]
@@ -238,6 +239,28 @@ def parse_battery_capacity_setting(response):
         return battery_capacity
     except ValueError:
         print("\033[91m0xAA not found in the response.\033[0m")
+        return None
+
+import struct
+
+def parse_total_battery_cycle_capacity(response):
+    start_time = time.time()
+    try:
+        index_of_89 = response.index(0x89)
+        if args.ptime == "show":
+         print(f"Found 0x89 at position: {index_of_89}")
+        
+        # Načteme 4 bajty pro celkovou cyklickou kapacitu
+        cycle_capacity_bytes = response[index_of_89 + 1:index_of_89 + 5]
+        
+        # Převod 4 bajtů na integer (cyklická kapacita baterie)
+        cycle_capacity = struct.unpack('>I', cycle_capacity_bytes)[0]
+        
+        print(f"Total battery cycle capacity: {cycle_capacity} AH")
+        print(f"Battery cycle capacity parsing took: {time.time() - start_time:.4f} seconds")
+        return cycle_capacity
+    except ValueError:
+        print("\033[91m0x89 not found in the response.\033[0m")
         return None
 
 def parse_current_calibration(response):
@@ -412,7 +435,8 @@ def gather_and_send_data():
             battery_warn = parse_battery_warning(full_response)
             power_tube_temp, battery_box_temp, battery_temp = parse_temperature_sensors(full_response)
             temp_sensor_count=parse_temperature_sensor_count(full_response)
-            battery_capacity_setting = parse_battery_capacity_setting(full_response)
+            battery_capacity = parse_battery_capacity_setting(full_response)
+            battery_cycle_capacity = parse_total_battery_cycle_capacity(full_response)
 
             if args.output == "mqtt":
                 send_data_to_mqtt(total_voltage, current_value, delta_voltage, cell_voltages, soc_value,
