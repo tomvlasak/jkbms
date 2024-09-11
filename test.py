@@ -205,7 +205,7 @@ def parse_protocol_version(response):
         index_of_c0 = response.index(0xc0)
         print(f"Found 0xC0 at position: {index_of_c0}")
         protocol_version = response[index_of_c0 + 1]
-        print(f"Protocol version number: {protocol_version}")if args.ptime:
+        print(f"Protocol version number: {protocol_version}")
         if args.ptime:
          print(f"Protocol version parsing took: {time.time() - start_time:.4f} seconds")
         return protocol_version
