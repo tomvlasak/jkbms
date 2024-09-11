@@ -229,6 +229,30 @@ def parse_current_calibration(response):
         print("\033[91m0xAD not found in the response.\033[0m")
         return None
 
+def parse_current_calibration_status(response):
+    start_time = time.time()
+    try:
+        # Najdeme index 0xB8 v odpovědi
+        index_of_b8 = response.index(0xb8)
+        print(f"Found 0xB8 at position: {index_of_b8}")
+
+        # Čteme 1 bajt, který udává stav kalibrace
+        calibration_status = response[index_of_b8 + 1]
+
+        # Vyhodnotíme stav kalibrace
+        if calibration_status == 1:
+            print(f"Current calibration: STARTED")
+        elif calibration_status == 0:
+            print(f"Current calibration: STOPPED")
+        else:
+            print(f"Unknown calibration status: {calibration_status}")
+        if args.ptime == "show":
+         print(f"Current calibration status parsing took: {time.time() - start_time:.4f} seconds")
+        return calibration_status
+    except ValueError:
+        print("\033[91m0xB8 not found in the response.\033[0m")  # Červeně pro chybovou zprávu
+        return None
+
 def parse_active_balance_switch(response):
     start_time = time.time()
     try:
