@@ -18,11 +18,10 @@ def crc(byteData):
     return [crc_byte3, crc_byte4]
 
 def decode_temperature(temp_raw):
-    if temp_raw <= 100:
-        return temp_raw  # Kladná teplota
+    if temp_raw <= 1000:
+        return temp_raw / 10.0  # Kladná teplota s přesností na desetinné místo
     else:
-        return -(temp_raw - 100)  # Záporná teplota
-
+        return -(temp_raw - 1000) / 10.0  # Záporná teplota s přesností na desetinné místo
 def parse_temperature_sensor_count(response):
     try:
         index_of_86 = response.index(0x86)
