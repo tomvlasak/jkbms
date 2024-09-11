@@ -350,7 +350,7 @@ def gather_and_send_data():
         bytes_written = s.write(request_FRAME)
         print(f"wrote {bytes_written} bytes")
 
-        full_response = s.read(212)
+        full_response = s.read(1024)
         read_time = time.time() - read_start_time
         print(f"Full response: {full_response.hex()}")
         print(f"Response read took: {read_time:.4f} seconds")
