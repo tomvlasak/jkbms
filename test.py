@@ -30,7 +30,7 @@ def parse_temperature_sensor_count(response):
         print(f"Number of temperature sensors: {sensor_count}")
         return sensor_count
     except ValueError:
-        print("0x86 not found in the response.")
+        print("\033[91m0x86 not found in the response.\033[0m")
         return None
 
 def parse_temperature_sensors(response):
@@ -69,7 +69,7 @@ def parse_total_voltage(response):
         print(f"Total voltage parsing took: {time.time() - start_time:.4f} seconds")
         return total_voltage
     except ValueError:
-        print("0x83 not found in the response.")
+        print("\033[91m0x83 not found in the response.\033[0m")
         return None
 
 def parse_soc(response):
@@ -82,7 +82,7 @@ def parse_soc(response):
         print(f"SOC parsing took: {time.time() - start_time:.4f} seconds")
         return soc_value
     except ValueError:
-        print("0x85 not found in the response.")
+        print("\033[91m0x85 not found in the response.\033[0m")
         return None
 
 def parse_current(response):
@@ -112,7 +112,7 @@ def parse_current(response):
             print("Current data outside expected range")
             return None
     except ValueError:
-        print("0x84 not found in the response.")
+        print("\033[91m0x84 not found in the response.\033[0m")
         return None
     finally:
         print(f"Current parsing took: {time.time() - start_time:.4f} seconds")
@@ -129,7 +129,7 @@ def parse_total_battery_strings(response):
         print(f"Battery strings parsing took: {time.time() - start_time:.4f} seconds")
         return total_strings
     except ValueError:
-        print("0x8A not found in the response.")
+        print("\033[91m0x8A not found in the response.\033[0m")
         return None
 
 def parse_individual_cell_voltage(response):
@@ -150,7 +150,7 @@ def parse_individual_cell_voltage(response):
         print(f"Cell voltage parsing took: {time.time() - start_time:.4f} seconds")
         return cell_voltages
     except ValueError:
-        print("0x79 not found in the response.")
+        print("\033[91m0x79 not found in the response.\033[0m")
         return None
 
 def calculate_delta_voltage(cell_voltages):
@@ -174,7 +174,7 @@ def parse_software_version(response):
         print(f"Software version parsing took: {time.time() - start_time:.4f} seconds")
         return version_data
     except ValueError:
-        print("0xB7 not found in the response.")
+        print("\033[91m0xB7 not found in the response.\033[0m")
         return None
 
 def parse_actual_battery_capacity(response):
@@ -273,7 +273,7 @@ def parse_battery_warning(response):
 
         return warning_raw
     except ValueError:
-        print("0x8B not found in the response.")
+        print("\033[91m0x8B not found in the response.\033[0m")
         return None
 
 
