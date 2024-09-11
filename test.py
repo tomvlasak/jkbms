@@ -57,6 +57,7 @@ def parse_temperature_sensors(response):
     except ValueError:
         print("Temperature data not found in the response.")
         return None, None, None
+        
 def parse_total_voltage(response):
     start_time = time.time()
     try:
