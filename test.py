@@ -241,7 +241,24 @@ def parse_battery_capacity_setting(response):
         print("\033[91m0xAA not found in the response.\033[0m")
         return None
 
-import struct
+def parse_battery_cycle_count(response):
+    start_time = time.time()
+    try:
+        index_of_87 = response.index(0x87)
+        print(f"Found 0x87 at position: {index_of_87}")
+        
+        # Načteme 2 bajty pro počet cyklů baterie
+        cycle_count_bytes = response[index_of_87 + 1:index_of_87 + 3]
+        
+        # Převod 2 bajtů na integer (počet cyklů baterie)
+        cycle_count = struct.unpack('>H', cycle_count_bytes)[0]
+        if args.ptime == "show":
+         print(f"Number of battery cycles: {cycle_count}")
+        print(f"Battery cycle count parsing took: {time.time() - start_time:.4f} seconds")
+        return cycle_count
+    except ValueError:
+        print("\033[91m0x87 not found in the response.\033[0m")
+        return None
 
 def parse_total_battery_cycle_capacity(response):
     start_time = time.time()
@@ -257,7 +274,8 @@ def parse_total_battery_cycle_capacity(response):
         cycle_capacity = struct.unpack('>I', cycle_capacity_bytes)[0]
         
         print(f"Total battery cycle capacity: {cycle_capacity} AH")
-        print(f"Battery cycle capacity parsing took: {time.time() - start_time:.4f} seconds")
+        if args.ptime == "show":
+            print(f"Battery cycle capacity parsing took: {time.time() - start_time:.4f} seconds")
         return cycle_capacity
     except ValueError:
         print("\033[91m0x89 not found in the response.\033[0m")
@@ -437,6 +455,7 @@ def gather_and_send_data():
             temp_sensor_count=parse_temperature_sensor_count(full_response)
             battery_capacity = parse_battery_capacity_setting(full_response)
             battery_cycle_capacity = parse_total_battery_cycle_capacity(full_response)
+            battery_cycle_count = parse_battery_cycle_count(full_response)
 
             if args.output == "mqtt":
                 send_data_to_mqtt(total_voltage, current_value, delta_voltage, cell_voltages, soc_value,
