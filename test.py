@@ -16,12 +16,6 @@ def crc(byteData):
     crc_byte3 = (CRC >> 8) & 0xFF
     print(f"CRC calculation took: {time.time() - start_time:.4f} seconds")
     return [crc_byte3, crc_byte4]
-
-def decode_temperature(temp_raw):
-    if temp_raw <= 100:
-        return temp_raw  # Kladná teplota (bez desetin)
-    else:
-        return temp_raw / 10.0  # Kladná teplota v desetinách stupně
         
 def parse_temperature_sensor_count(response):
     try:
@@ -33,28 +27,36 @@ def parse_temperature_sensor_count(response):
         print("\033[91m0x86 not found in the response.\033[0m")
         return None
 
+def decode_temperature(temp_raw):
+    if temp_raw <= 100:
+        return temp_raw  # Kladná teplota (bez desetin)
+    else:
+        return -(temp_raw - 100)  # Záporná teplota
+
 def parse_temperature_sensors(response):
     try:
         index_of_80 = response.index(0x80)
-        power_tube_temp = struct.unpack('>H', response[index_of_80 + 1:index_of_80 + 3])[0]
-        power_tube_temp_c = decode_temperature(power_tube_temp)
+        power_tube_temp_raw = struct.unpack('>H', response[index_of_80 + 1:index_of_80 + 3])[0]
+        print(f"Raw power tube temperature: {power_tube_temp_raw}")
+        power_tube_temp_c = decode_temperature(power_tube_temp_raw)
         print(f"Power tube temperature: {power_tube_temp_c} °C")
 
         index_of_81 = response.index(0x81)
-        battery_box_temp = struct.unpack('>H', response[index_of_81 + 1:index_of_81 + 3])[0]
-        battery_box_temp_c = decode_temperature(battery_box_temp)
+        battery_box_temp_raw = struct.unpack('>H', response[index_of_81 + 1:index_of_81 + 3])[0]
+        print(f"Raw battery box temperature: {battery_box_temp_raw}")
+        battery_box_temp_c = decode_temperature(battery_box_temp_raw)
         print(f"Battery box temperature: {battery_box_temp_c} °C")
 
         index_of_82 = response.index(0x82)
-        battery_temp = struct.unpack('>H', response[index_of_82 + 1:index_of_82 + 3])[0]
-        battery_temp_c = decode_temperature(battery_temp)
+        battery_temp_raw = struct.unpack('>H', response[index_of_82 + 1:index_of_82 + 3])[0]
+        print(f"Raw battery temperature: {battery_temp_raw}")
+        battery_temp_c = decode_temperature(battery_temp_raw)
         print(f"Battery temperature: {battery_temp_c} °C")
 
         return power_tube_temp_c, battery_box_temp_c, battery_temp_c
     except ValueError:
         print("Temperature data not found in the response.")
         return None, None, None
-
 def parse_total_voltage(response):
     start_time = time.time()
     try:
