@@ -59,7 +59,8 @@ def parse_total_voltage(response):
     start_time = time.time()
     try:
         index_of_83 = response.index(0x83)
-        print(f"Found 0x83 at position: {index_of_83}")
+        if args.ptime == "show":
+            print(f"Found 0x83 at position: {index_of_83}")
         
         # Využití struct pro přečtení 2 bajtů jako unsigned short (16 bitů) big-endian
         total_voltage_raw = struct.unpack_from('>H', response, index_of_83 + 1)[0]
@@ -77,7 +78,8 @@ def parse_soc(response):
     start_time = time.time()
     try:
         index_of_85 = response.index(0x85)
-        print(f"Found 0x85 at position: {index_of_85}")
+        if args.ptime == "show":
+            print(f"Found 0x85 at position: {index_of_85}")
         soc_value = response[index_of_85 + 1]
         print(f"SOC (State of Charge): {soc_value}%")
         if args.ptime == "show":
@@ -91,7 +93,8 @@ def parse_current(response):
     start_time = time.time()
     try:
         index_of_84 = response.index(0x84)
-        print(f"Found 0x84 at position: {index_of_84}")
+        if args.ptime == "show":
+            print(f"Found 0x84 at position: {index_of_84}")
         current_high = response[index_of_84 + 1]
         current_low = response[index_of_84 + 2]
         current_raw = (current_high << 8) | current_low
@@ -124,7 +127,8 @@ def parse_total_battery_strings(response):
     start_time = time.time()
     try:
         index_of_8a = response.index(0x8a)
-        print(f"Found 0x8A at position: {index_of_8a}")
+        if args.ptime == "show":
+            print(f"Found 0x8A at position: {index_of_8a}")
         strings_high = response[index_of_8a + 1]
         strings_low = response[index_of_8a + 2]
         total_strings = (strings_high << 8) | strings_low
@@ -140,7 +144,8 @@ def parse_individual_cell_voltage(response):
     start_time = time.time()
     try:
         index_of_79 = response.index(0x79)
-        print(f"Found 0x79 at position: {index_of_79}")
+        if args.ptime == "show":
+            print(f"Found 0x79 at position: {index_of_79}")
         length_of_data = response[index_of_79 + 1]
         cell_voltages = []
         for i in range(0, length_of_data, 3):
@@ -173,7 +178,8 @@ def parse_software_version(response):
     start_time = time.time()
     try:
         index_of_b7 = response.index(0xb7)
-        print(f"Found 0xB7 at position: {index_of_b7}")
+        if args.ptime == "show":
+            print(f"Found 0xB7 at position: {index_of_b7}")
         version_data = response[index_of_b7 + 1:index_of_b7 + 16].decode("utf-8")
         print(f"Software version number: {version_data}")
         if args.ptime == "show":
@@ -187,7 +193,8 @@ def parse_actual_battery_capacity(response):
     start_time = time.time()
     try:
         index_of_b9 = response.index(0xb9)
-        print(f"Found 0xB9 at position: {index_of_b9}")
+        if args.ptime == "show":
+            print(f"Found 0xB9 at position: {index_of_b9}")
         capacity_high = response[index_of_b9 + 1]
         capacity_low = response[index_of_b9 + 2]
         actual_capacity = (capacity_high << 8) | capacity_low
@@ -203,7 +210,8 @@ def parse_protocol_version(response):
     start_time = time.time()
     try:
         index_of_c0 = response.index(0xc0)
-        print(f"Found 0xC0 at position: {index_of_c0}")
+        if args.ptime == "show":
+            print(f"Found 0xC0 at position: {index_of_c0}")
         protocol_version = response[index_of_c0 + 1]
         print(f"Protocol version number: {protocol_version}")
         if args.ptime == "show":
@@ -217,7 +225,8 @@ def parse_current_calibration(response):
     start_time = time.time()
     try:
         index_of_ad = response.index(0xad)
-        print(f"Found 0xAD at position: {index_of_ad}")
+        if args.ptime == "show":
+            print(f"Found 0xAD at position: {index_of_ad}")
         calibration_high = response[index_of_ad + 1]
         calibration_low = response[index_of_ad + 2]
         calibration_value = (calibration_high << 8) | calibration_low
@@ -234,7 +243,8 @@ def parse_current_calibration_status(response):
     try:
         # Najdeme index 0xB8 v odpovědi
         index_of_b8 = response.index(0xb8)
-        print(f"Found 0xB8 at position: {index_of_b8}")
+        if args.ptime == "show":
+            print(f"Found 0xB8 at position: {index_of_b8}")
 
         # Čteme 1 bajt, který udává stav kalibrace
         calibration_status = response[index_of_b8 + 1]
@@ -257,7 +267,8 @@ def parse_active_balance_switch(response):
     start_time = time.time()
     try:
         index_of_9d = response.index(0x9d)
-        print(f"Found 0x9D at position: {index_of_9d}")
+        if args.ptime == "show":
+         print(f"Found 0x9D at position: {index_of_9d}")
         active_balance_switch = response[index_of_9d + 1]
         print(f"Active balance switch: {'ON' if active_balance_switch == 1 else 'OFF'}")
         if args.ptime == "show":
@@ -272,7 +283,8 @@ def parse_active_balance_switch(response):
 def parse_battery_warning(response):
     try:
         index_of_8b = response.index(0x8B)
-        print(f"Found 0x8B at position: {index_of_8b}")
+        if args.ptime == "show":
+            print(f"Found 0x8B at position: {index_of_8b}")
         warning_high = response[index_of_8b + 1]
         warning_low = response[index_of_8b + 2]
         warning_raw = (warning_high << 8) | warning_low
@@ -350,7 +362,7 @@ def gather_and_send_data():
         bytes_written = s.write(request_FRAME)
         print(f"wrote {bytes_written} bytes")
 
-        full_response = s.read(256)
+        full_response = s.read(255)
         read_time = time.time() - read_start_time
         print(f"Full response: {full_response.hex()}")
         print(f"Response read took: {read_time:.4f} seconds")
