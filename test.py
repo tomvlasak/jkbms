@@ -502,6 +502,7 @@ def gather_and_send_data():
             battery_cycle_capacity = parse_total_battery_cycle_capacity(full_response)
             battery_cycle_count = parse_battery_cycle_count(full_response)
             battery_status = parse_battery_status(full_response)
+            response_length=getLength(full_response)
 
             if args.output == "mqtt":
                 send_data_to_mqtt(total_voltage, current_value, delta_voltage, cell_voltages, soc_value,
