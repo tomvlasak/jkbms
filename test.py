@@ -23,6 +23,10 @@ def decode_temperature(temp_raw):
     else:
         return -(temp_raw - 100)  # Záporná teplota
 
+def getLength(response):
+    print(f"Length of response: {len(response)}")
+    return (len(response))
+
 def parse_temperature_sensor_count(response):
     try:
         index_of_86 = response.index(0x86)
