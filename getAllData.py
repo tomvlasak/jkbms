@@ -23,6 +23,10 @@ def decode_temperature(temp_raw):
     else:
         return -(temp_raw - 100)  # Záporná teplota
 
+def getLength(response):
+    print(f"Length of response: {len(response)}")
+    return (len(response))
+
 def parse_temperature_sensor_count(response):
     try:
         index_of_86 = response.index(0x86)
@@ -106,7 +110,7 @@ def parse_current(response):
         if current_raw <= 10000:
             current = ((10000 - current_raw) * 0.01) - 100
             print(f"Current (discharging): {current} A")
-            return -current
+            return current
         elif current_raw >= 32768:
             current = (current_raw - 32768 - 10000) * 0.01
             if current_raw > 32768:
@@ -424,7 +428,7 @@ def parse_battery_warning(response):
         return None
 
 
-def send_data_to_mqtt(voltage, current, delta_voltage, cell_voltages, soc, power_tube_temp, battery_box_temp, battery_temp):
+def send_data_to_mqtt(voltage, current, delta_voltage, cell_voltages, soc, power_tube_temp, battery_box_temp, battery_temp,response_length):
     mqtt_broker = "127.0.0.1"
     mqtt_port = 1883
     mqtt_topic = "jkbms-test"
@@ -438,7 +442,7 @@ def send_data_to_mqtt(voltage, current, delta_voltage, cell_voltages, soc, power
     # Přidáme SOC, teploty a napětí článků do zprávy
     data = (f"battery_measurements voltage={voltage},current={current},delta_voltage={delta_voltage},soc={soc},"
             f"power_tube_temp={power_tube_temp},battery_box_temp={battery_box_temp},battery_temp={battery_temp},"
-            f"{cell_voltage_data}")
+            f"{cell_voltage_data},response_length={response_length}")
     
     client.publish(mqtt_topic, data)
     print(f"Data o napětí {voltage} V, proudu {current} A, delta napětí {delta_voltage} V, SOC {soc}%, "
@@ -498,10 +502,11 @@ def gather_and_send_data():
             battery_cycle_capacity = parse_total_battery_cycle_capacity(full_response)
             battery_cycle_count = parse_battery_cycle_count(full_response)
             battery_status = parse_battery_status(full_response)
+            response_length=getLength(full_response)
 
             if args.output == "mqtt":
                 send_data_to_mqtt(total_voltage, current_value, delta_voltage, cell_voltages, soc_value,
-                                  power_tube_temp, battery_box_temp, battery_temp)
+                                  power_tube_temp, battery_box_temp, battery_temp,response_length)
 
         interpret_time = time.time() - interpret_start_time
         print(f"Data interpretation took: {interpret_time:.4f} seconds")
