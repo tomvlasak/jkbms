@@ -110,7 +110,7 @@ def parse_current(response):
         if current_raw <= 10000:
             current = ((10000 - current_raw) * 0.01) - 100
             print(f"Current (discharging): {current} A")
-            return -current
+            return current
         elif current_raw >= 32768:
             current = (current_raw - 32768 - 10000) * 0.01
             if current_raw > 32768:
