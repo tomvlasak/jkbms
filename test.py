@@ -428,7 +428,7 @@ def parse_battery_warning(response):
         return None
 
 
-def send_data_to_mqtt(voltage, current, delta_voltage, cell_voltages, soc, power_tube_temp, battery_box_temp, battery_temp,response_length):
+def send_data_to_mqtt(voltage, current, delta_voltage, cell_voltages, soc, power_tube_temp, battery_box_temp, battery_temp,response_length,response):
     mqtt_broker = "127.0.0.1"
     mqtt_port = 1883
     mqtt_topic = "jkbms-test"
@@ -503,10 +503,11 @@ def gather_and_send_data():
             battery_cycle_count = parse_battery_cycle_count(full_response)
             battery_status = parse_battery_status(full_response)
             response_length=getLength(full_response)
+            response=full_response
 
             if args.output == "mqtt":
                 send_data_to_mqtt(total_voltage, current_value, delta_voltage, cell_voltages, soc_value,
-                                  power_tube_temp, battery_box_temp, battery_temp,response_length)
+                                  power_tube_temp, battery_box_temp, battery_temp,response_length,response)
 
         interpret_time = time.time() - interpret_start_time
         print(f"Data interpretation took: {interpret_time:.4f} seconds")
