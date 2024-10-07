@@ -447,6 +447,7 @@ def send_data_to_mqtt(voltage, current, delta_voltage, cell_voltages, soc, power
     client.publish(mqtt_topic, data)
     print(f"Data o napětí {voltage} V, proudu {current} A, delta napětí {delta_voltage} V, SOC {soc}%, "
           f"teplotě MOSFETu {power_tube_temp} °C, teplotě bateriového boxu {battery_box_temp} °C, "
+          f"response hex = {response_hex} "
           f"teplotě baterie {battery_temp} °C a napětí článků byla odeslána na MQTT téma '{mqtt_topic}'.")
 
     client.disconnect()
