@@ -428,7 +428,7 @@ def parse_battery_warning(response):
         return None
 
 
-def send_data_to_mqtt(voltage, current, delta_voltage, cell_voltages, soc, power_tube_temp, battery_box_temp, battery_temp,response_length,response):
+def send_data_to_mqtt(voltage, current, delta_voltage, cell_voltages, soc, power_tube_temp, battery_box_temp, battery_temp,response_length,full_response):
     mqtt_broker = "127.0.0.1"
     mqtt_port = 1883
     mqtt_topic = "jkbms-test"
@@ -442,7 +442,7 @@ def send_data_to_mqtt(voltage, current, delta_voltage, cell_voltages, soc, power
     # Přidáme SOC, teploty a napětí článků do zprávy
     data = (f"battery_measurements voltage={voltage},current={current},delta_voltage={delta_voltage},soc={soc},"
             f"power_tube_temp={power_tube_temp},battery_box_temp={battery_box_temp},battery_temp={battery_temp},"
-            f"{cell_voltage_data},response_length={response_length},response={response}")
+            f"{cell_voltage_data},response_length={response_length},full_response={full_response}")
     
     client.publish(mqtt_topic, data)
     print(f"Data o napětí {voltage} V, proudu {current} A, delta napětí {delta_voltage} V, SOC {soc}%, "
@@ -503,11 +503,10 @@ def gather_and_send_data():
             battery_cycle_count = parse_battery_cycle_count(full_response)
             battery_status = parse_battery_status(full_response)
             response_length=getLength(full_response)
-            response=full_response
-
+            
             if args.output == "mqtt":
                 send_data_to_mqtt(total_voltage, current_value, delta_voltage, cell_voltages, soc_value,
-                                  power_tube_temp, battery_box_temp, battery_temp,response_length,response)
+                                  power_tube_temp, battery_box_temp, battery_temp,response_length,full_response)
 
         interpret_time = time.time() - interpret_start_time
         print(f"Data interpretation took: {interpret_time:.4f} seconds")
