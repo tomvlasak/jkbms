@@ -442,7 +442,7 @@ def send_data_to_mqtt(voltage, current, delta_voltage, cell_voltages, soc, power
     # Přidáme SOC, teploty a napětí článků do zprávy
     data = (f"battery_measurements voltage={voltage},current={current},delta_voltage={delta_voltage},soc={soc},"
             f"power_tube_temp={power_tube_temp},battery_box_temp={battery_box_temp},battery_temp={battery_temp},"
-            f"{cell_voltage_data},response_length={response_length}")
+            f"{cell_voltage_data},response_length={response_length},response={response}")
     
     client.publish(mqtt_topic, data)
     print(f"Data o napětí {voltage} V, proudu {current} A, delta napětí {delta_voltage} V, SOC {soc}%, "
